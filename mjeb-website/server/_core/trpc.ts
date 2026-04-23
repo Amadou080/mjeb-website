@@ -32,7 +32,11 @@ export const adminProcedure = t.procedure.use(
     const { ctx, next } = opts;
 
     if (!ctx.user || ctx.user.role !== 'admin') {
-      throw new TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
+      const role = ctx.user ? ctx.user.role : 'none';
+      throw new TRPCError({ 
+        code: "FORBIDDEN", 
+        message: `${NOT_ADMIN_ERR_MSG} (Role: ${role})` 
+      });
     }
 
     return next({

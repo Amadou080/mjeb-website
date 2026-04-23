@@ -17,7 +17,13 @@ export async function createContext(
   const cookieHeader = opts.req.headers.cookie || "";
   console.log("[Context] Cookie header present:", !!cookieHeader);
   
-  const cookies = (sdk as any).parseCookies(cookieHeader);
+  // Parse cookies manually for maximum reliability
+  const cookies = new Map<string, string>();
+  cookieHeader.split(";").forEach(c => {
+    const [key, value] = c.trim().split("=");
+    if (key && value) cookies.set(key, value);
+  });
+
   const sessionCookie = cookies.get(COOKIE_NAME);
   console.log("[Context] Session cookie found:", !!sessionCookie);
 
