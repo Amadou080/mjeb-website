@@ -78,7 +78,7 @@ class OAuthService {
 
 const createOAuthHttpClient = (): AxiosInstance =>
   axios.create({
-    baseURL: ENV.oAuthServerUrl,
+    baseURL: ENV.oAuthServerUrl || "http://localhost",
     timeout: AXIOS_TIMEOUT_MS,
   });
 
@@ -272,6 +272,10 @@ class SDKServer {
 
     // If user not in DB, sync from OAuth server automatically
     if (!user) {
+      if (!ENV.oAuthServerUrl) {
+        console.warn("[Auth] User not found and OAUTH_SERVER_URL not configured. Skipping sync.");
+        throw ForbiddenError("User not found and OAuth not configured");
+      }
       try {
         const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
         await db.upsertUser({
