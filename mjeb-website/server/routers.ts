@@ -52,27 +52,8 @@ export const appRouter = router({
         }
         throw new Error("Code d'autorisation invalide");
       }),
-    me: publicProcedure.query(async (opts) => {
-      // Check JWT from session cookie
-      const cookieHeader = opts.ctx.req.headers.cookie || "";
-      const cookies = new Map();
-      cookieHeader.split("; ").forEach(cookie => {
-        const [key, value] = cookie.split("=");
-        cookies.set(key, value);
-      });
-      
-      const sessionCookie = cookies.get(COOKIE_NAME);
-      const session = await sdk.verifySession(sessionCookie);
-      
-      if (session && session.openId === "admin-user-openid") {
-        return {
-          id: "admin",
-          name: session.name || "MJEB Admin",
-          role: "admin",
-          email: "admin@mjeb.org"
-        };
-      }
-      return null;
+    me: publicProcedure.query(async ({ ctx }) => {
+      return ctx.user;
     }),
     logout: publicProcedure.mutation(({ ctx }) => {
       ctx.res.clearCookie(COOKIE_NAME, { path: "/" });

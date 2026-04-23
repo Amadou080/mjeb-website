@@ -15,28 +15,38 @@ export async function createContext(
   let user: User | null = null;
 
   const cookieHeader = opts.req.headers.cookie || "";
+  console.log("[Context] Cookie header present:", !!cookieHeader);
+  
   const cookies = (sdk as any).parseCookies(cookieHeader);
   const sessionCookie = cookies.get(COOKIE_NAME);
+  console.log("[Context] Session cookie found:", !!sessionCookie);
 
   if (sessionCookie) {
     try {
       const session = await sdk.verifySession(sessionCookie);
+      console.log("[Context] Session verified:", session ? session.openId : "failed");
+      
       if (session) {
         if (session.openId === "admin-user-openid") {
           user = {
-            id: "admin",
+            id: 999999, // Use a number for ID to be safe
+            openId: session.openId,
             name: session.name || "MJEB Admin",
             role: "admin",
             email: "admin@mjeb.org"
           } as any;
+          console.log("[Context] Admin user detected and set");
         } else {
           user = await sdk.authenticateRequest(opts.req);
+          console.log("[Context] Regular user authenticated:", user?.id);
         }
       }
     } catch (error) {
       console.error("[Context] Auth error:", error);
       user = null;
     }
+  } else {
+    console.log("[Context] No session cookie, user remains null");
   }
 
   return {
