@@ -32,7 +32,17 @@ export const appRouter = router({
         // TODO: Implémenter la vérification OAuth réelle
         // Pour l'instant, accepter tout code valide (à remplacer par OAuth)
         if (input.code && input.code.length > 10) {
-          const sessionToken = await sdk.createSessionToken("admin-user-openid", {
+          const openId = "admin-user-openid";
+          // S'assurer que l'utilisateur admin existe en base pour que les procédures TRPC fonctionnent
+          await upsertUser({
+            openId,
+            name: "MJEB Admin",
+            role: "admin",
+            email: "admin@mjeb.org",
+            loginMethod: "password"
+          });
+
+          const sessionToken = await sdk.createSessionToken(openId, {
             name: "MJEB Admin",
             expiresInMs: ONE_YEAR_MS,
           });

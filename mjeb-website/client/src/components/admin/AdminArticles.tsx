@@ -6,6 +6,7 @@ import { Plus, Edit2, Trash2, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 export default function AdminArticles() {
   const { data: articles = [], refetch } = trpc.articles.adminList.useQuery();
@@ -44,23 +45,30 @@ export default function AdminArticles() {
       imageUrl = res.url;
     }
     
-    const payload = { ...formData, imageUrl };
+    try {
+      const payload = { ...formData, imageUrl };
 
-    if (editingId) {
-      await updateMutation.mutateAsync({ id: editingId, data: payload });
-    } else {
-      await createMutation.mutateAsync(payload);
+      if (editingId) {
+        await updateMutation.mutateAsync({ id: editingId, data: payload });
+        toast.success("Actualité mise à jour");
+      } else {
+        await createMutation.mutateAsync(payload);
+        toast.success("Actualité créée avec succès");
+      }
+      setFormData({
+        title: "",
+        slug: "",
+        description: "",
+        content: "",
+        published: false,
+        imageUrl: "",
+      });
+      setFile(null);
+      setShowForm(false);
+    } catch (error: any) {
+      console.error("Erreur lors de la publication:", error);
+      toast.error(error.message || "Erreur lors de la publication de l'actualité");
     }
-    setFormData({
-      title: "",
-      slug: "",
-      description: "",
-      content: "",
-      published: false,
-      imageUrl: "",
-    });
-    setFile(null);
-    setShowForm(false);
   };
 
   const handleDelete = async (id: number) => {
