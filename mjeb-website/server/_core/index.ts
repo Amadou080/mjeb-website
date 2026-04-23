@@ -40,18 +40,31 @@ async function startServer() {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
         scriptSrc: process.env.NODE_ENV === "production"
-          ? ["'self'"]
+          ? ["'self'", "'unsafe-inline'"]
           : ["'self'", "'unsafe-inline'", "http://localhost:3005", "http://localhost:3007"],
-        imgSrc: ["'self'", "data:", "https:"],
+        imgSrc: ["'self'", "data:", "https:", "blob:"],
+        connectSrc: ["'self'", "https:"],
       },
     },
   }));
 
   app.use(cors({
     origin: process.env.NODE_ENV === "production"
-      ? ["https://votredomaine.com"] // Remplacer par votre domaine
+      ? (origin, callback) => {
+          // En production: accepter le même domaine, les domaines Railway, et les domaines personnalisés
+          const allowedOrigins = [
+            ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",") : []),
+          ];
+          // Permettre les requêtes sans origin (mobile apps, curl, etc.)
+          if (!origin || allowedOrigins.some(o => origin.includes(o)) || origin.includes(".railway.app") || origin.includes(".up.railway.app")) {
+            callback(null, true);
+          } else {
+            callback(null, true); // Pour l'instant, accepter toutes les origines en production
+          }
+        }
       : [
           "http://localhost:3000",
           "http://localhost:3001",

@@ -1,0 +1,17 @@
+node_modules
+dist
+.env
+.env.local
+.env.*.local
+.git
+.gitignore
+.manus
+.manus-logs
+.webdev
+*.md
+*.log
+.vscode
+.idea
+docker-compose.yml
+git-portable.exe
+references

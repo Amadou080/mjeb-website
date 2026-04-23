@@ -101,7 +101,14 @@ jspm_packages/
 tmp/
 temp/
 
-# Database
-*.db
+# Database (keep sqlite.db for deployment seed data)
 *.sqlite
 *.sqlite3
+!sqlite.db
+
+# Manus / WebDev specific
+.manus/
+.manus-logs/
+.webdev/
+git-portable.exe
+output.log

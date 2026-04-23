@@ -2,6 +2,10 @@ export const ENV = {
   appId: (() => {
     const value = process.env.VITE_APP_ID;
     if (!value) {
+      if (process.env.NODE_ENV === "production") {
+        console.warn("VITE_APP_ID non défini, utilisation d'une valeur par défaut");
+        return "mjeb-website";
+      }
       throw new Error("Variable d'environnement manquante: VITE_APP_ID");
     }
     return value;
@@ -22,9 +26,7 @@ export const ENV = {
   databaseUrl: (() => {
     const value = process.env.DATABASE_URL;
     if (!value) {
-      if (process.env.NODE_ENV === "production") {
-        throw new Error("Variable d'environnement requise en production: DATABASE_URL");
-      }
+      // En production sur Railway, utiliser le fichier SQLite local (avec volume)
       return "file:./sqlite.db";
     }
     return value;
@@ -32,6 +34,10 @@ export const ENV = {
   oAuthServerUrl: (() => {
     const value = process.env.OAUTH_SERVER_URL;
     if (!value) {
+      if (process.env.NODE_ENV === "production") {
+        console.warn("OAUTH_SERVER_URL non défini, OAuth désactivé");
+        return "";
+      }
       throw new Error("Variable d'environnement manquante: OAUTH_SERVER_URL");
     }
     return value;
@@ -39,6 +45,10 @@ export const ENV = {
   ownerOpenId: (() => {
     const value = process.env.OWNER_OPEN_ID;
     if (!value) {
+      if (process.env.NODE_ENV === "production") {
+        console.warn("OWNER_OPEN_ID non défini, utilisation d'une valeur par défaut");
+        return "admin";
+      }
       throw new Error("Variable d'environnement manquante: OWNER_OPEN_ID");
     }
     return value;
