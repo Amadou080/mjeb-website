@@ -1,41 +1,9 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import Layout from "@/components/Layout";
 import { Lock } from "lucide-react";
-import { toast } from "sonner";
-import { trpc } from "@/lib/trpc";
-import { useLocation } from "wouter";
+import { Link } from "wouter";
 
 export default function Login() {
-  const [password, setPassword] = useState("");
-  const [, setLocation] = useLocation();
-  const utils = trpc.useUtils();
-
-  const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: () => {
-      // Invalidate and refetch user data after successful login
-      utils.auth.me.invalidate();
-      toast.success("Connexion réussie");
-      // Small delay to ensure cookie is set
-      setTimeout(() => {
-        window.location.href = "/admin";
-      }, 100);
-    },
-    onError: (error) => {
-      toast.error(error.message || "Échec de la connexion");
-    }
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!password) return;
-    // TEMPORAIRE: Utiliser le mot de passe comme code OAuth
-    // TODO: Remplacer par OAuth réel
-    loginMutation.mutate({ code: password, state: "admin" });
-  };
-
   return (
     <Layout>
       <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 p-4">
@@ -46,33 +14,21 @@ export default function Login() {
             </div>
             <h1 className="text-3xl font-black uppercase text-primary">Administration</h1>
             <p className="page-muted mt-2 text-center font-medium">
-              Veuillez entrer le mot de passe pour accéder au tableau de bord.
+              L'acces administrateur est temporairement desactive pour stabiliser la version publique.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">
-                Mot de passe
-              </label>
-              <Input
-                type="password"
-                placeholder="Mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoFocus
-                className="w-full text-lg p-6"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              disabled={loginMutation.isPending || !password}
-              className="btn-mjeb-primary w-full py-6 text-lg disabled:opacity-50 disabled:pointer-events-none"
+          <div className="space-y-4">
+            <p className="text-center text-sm text-muted-foreground">
+              Merci de revenir plus tard. La partie utilisateur du site reste disponible.
+            </p>
+            <Link
+              href="/"
+              className="btn-mjeb-primary w-full py-3 text-lg inline-flex justify-center"
             >
-              {loginMutation.isPending ? "Connexion..." : "Se Connecter"}
-            </Button>
-          </form>
+              Retour a l'accueil
+            </Link>
+          </div>
         </Card>
       </div>
     </Layout>

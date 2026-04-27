@@ -1,9 +1,7 @@
-import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
-import { getSessionCookieOptions } from "./_core/cookies";
+import { COOKIE_NAME } from "@shared/const";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router, protectedProcedure, adminProcedure } from "./_core/trpc";
+import { publicProcedure, router, adminProcedure } from "./_core/trpc";
 import { z } from "zod";
-import { sdk } from "./_core/sdk";
 import {
   getPublishedArticles,
   getArticleBySlug,
@@ -28,29 +26,10 @@ export const appRouter = router({
   auth: router({
     login: publicProcedure
       .input(z.object({ code: z.string(), state: z.string() }))
-      .mutation(async ({ input, ctx }) => {
-        // TODO: Implémenter la vérification OAuth réelle
-        // Pour l'instant, accepter tout code valide (à remplacer par OAuth)
-        if (input.code && input.code.length > 10) {
-          const openId = "admin-user-openid";
-          // S'assurer que l'utilisateur admin existe en base pour que les procédures TRPC fonctionnent
-          await upsertUser({
-            openId,
-            name: "MJEB Admin",
-            role: "admin",
-            email: "admin@mjeb.org",
-            loginMethod: "password"
-          });
-
-          const sessionToken = await sdk.createSessionToken(openId, {
-            name: "MJEB Admin",
-            expiresInMs: ONE_YEAR_MS,
-          });
-          const cookieOptions = getSessionCookieOptions(ctx.req);
-          ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
-          return { success: true };
-        }
-        throw new Error("Code d'autorisation invalide");
+      .mutation(async () => {
+        throw new Error(
+          "L'administration est temporairement desactivee. Contactez l'equipe MJEB."
+        );
       }),
     me: publicProcedure.query(async ({ ctx }) => {
       return ctx.user;

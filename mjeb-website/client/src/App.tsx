@@ -13,7 +13,6 @@ import NewsDetail from "./pages/NewsDetail";
 import Gallery from "./pages/Gallery";
 import Partners from "./pages/Partners";
 import Contact from "./pages/Contact";
-import AdminDashboard from "./pages/AdminDashboard";
 import Login from "./pages/Login";
 
 function Router() {
@@ -29,7 +28,7 @@ function Router() {
       <Route path={"/partners"} component={Partners} />
       <Route path={"/contact"} component={Contact} />
       <Route path={"/login"} component={Login} />
-      <Route path={"/admin"} component={AdminDashboard} />
+      <Route path={"/admin"} component={NotFound} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

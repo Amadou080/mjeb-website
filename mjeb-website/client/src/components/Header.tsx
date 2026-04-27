@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu, X } from "lucide-react";
-import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user, isAuthenticated } = useAuth();
   const [location] = useLocation();
 
   const navItems = [
@@ -91,14 +89,6 @@ export default function Header() {
 
           {/* ── Right Actions ── */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            {isAuthenticated && user?.role === "admin" && (
-              <Link
-                href="/admin"
-                className="hidden md:inline-flex items-center text-xs font-bold uppercase tracking-wider text-white/70 hover:text-white border border-white/20 hover:border-white/50 px-3 py-1.5 rounded transition-all"
-              >
-                Admin
-              </Link>
-            )}
             <Link
               href="/contact"
               className="hidden sm:inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-xs font-black uppercase tracking-widest px-5 py-2.5 rounded transition-all duration-200 shadow-lg shadow-red-900/30 hover:shadow-red-900/50 hover:scale-[1.03] active:scale-95"
@@ -180,15 +170,6 @@ export default function Header() {
               );
             })}
 
-            {isAuthenticated && user?.role === "admin" && (
-              <Link
-                href="/admin"
-                className="flex items-center gap-3 py-3.5 px-4 rounded-lg font-bold uppercase tracking-wider text-sm text-yellow-400/80 hover:text-yellow-400 hover:bg-white/5 transition-all mt-1 border-t border-white/5 pt-5"
-                onClick={() => setIsOpen(false)}
-              >
-                Administration
-              </Link>
-            )}
           </nav>
 
           {/* Drawer Footer CTA */}
