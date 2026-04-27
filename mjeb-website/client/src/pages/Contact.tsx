@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
 import Layout from "@/components/Layout";
-import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
 export default function Contact() {
@@ -14,23 +13,18 @@ export default function Contact() {
     message: "",
   });
 
-  const submitMutation = trpc.contact.submit.useMutation({
-    onSuccess: () => {
-      toast.success("Message envoyé avec succès ! Nous vous répondrons bientôt.");
-      setFormData({ name: "", email: "", message: "" });
-    },
-    onError: () => {
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
-    },
-  });
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       toast.error("Veuillez remplir tous les champs");
       return;
     }
-    submitMutation.mutate(formData);
+    const subject = encodeURIComponent(`Contact MJEB - ${formData.name}`);
+    const body = encodeURIComponent(
+      `Nom: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+    );
+    window.location.href = `mailto:mjeb.contact@gmail.com?subject=${subject}&body=${body}`;
+    toast.success("Votre application email va s'ouvrir pour envoyer le message.");
   };
 
   return (
@@ -179,10 +173,9 @@ export default function Contact() {
 
                 <Button
                   type="submit"
-                  disabled={submitMutation.isPending}
-                  className="btn-mjeb-primary w-full py-6 text-base disabled:opacity-50 disabled:pointer-events-none"
+                  className="btn-mjeb-primary w-full py-6 text-base"
                 >
-                  {submitMutation.isPending ? "Envoi en cours..." : "Envoyer le message"}
+                  Envoyer le message
                   <Send className="w-5 h-5" />
                 </Button>
 

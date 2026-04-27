@@ -97,37 +97,14 @@ const generateImageUrls = () => {
 
   return images;
 };
-
-import { trpc } from "@/lib/trpc";
-
 export default function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedImage, setSelectedImage] = useState<any>(null);
   const [visibleCount, setVisibleCount] = useState(16);
 
-  const { data: dbImages = [] } = trpc.gallery.list.useQuery();
-
-  const catNameToId: Record<string, string> = {
-    "Bababe Art": "art",
-    "Concert": "concert",
-    "Bababé Clean": "clean",
-    "Bababe GREEN": "green",
-    "Conférence": "conference",
-    "Assemblée Générale": "assembly",
-    "Sensibilisation": "sensibilisation",
-  };
-
   const allImages = useMemo(() => {
-    const staticImages = generateImageUrls();
-    const dynamicImages = dbImages.map(item => ({
-      id: `db-${item.id}`,
-      category: catNameToId[item.category] || item.category,
-      folder: item.category,
-      url: item.mediaUrl,
-      title: item.title || "Photo"
-    }));
-    return [...staticImages, ...dynamicImages];
-  }, [dbImages]);
+    return generateImageUrls();
+  }, []);
 
   const filteredImages = useMemo(() => {
     if (selectedCategory === "all") {

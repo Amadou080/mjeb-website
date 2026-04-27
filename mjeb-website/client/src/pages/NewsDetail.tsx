@@ -3,35 +3,14 @@ import { Link } from "wouter";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Layout from "@/components/Layout";
-import { trpc } from "@/lib/trpc";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { STATIC_ARTICLES } from "@/lib/staticContent";
 
 export default function NewsDetail() {
   const [, params] = useRoute("/news/:slug");
   const slug = params?.slug as string;
-
-  const { data: article, isLoading } = trpc.articles.getBySlug.useQuery(slug, {
-    enabled: !!slug,
-  });
-
-  if (isLoading) {
-    return (
-      <Layout>
-        <div className="container py-16">
-          <div className="max-w-3xl mx-auto space-y-6">
-            <div className="h-8 bg-muted rounded animate-pulse"></div>
-            <div className="h-96 bg-muted rounded animate-pulse"></div>
-            <div className="space-y-3">
-              <div className="h-4 bg-muted rounded animate-pulse"></div>
-              <div className="h-4 bg-muted rounded animate-pulse"></div>
-              <div className="h-4 bg-muted rounded animate-pulse w-2/3"></div>
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  const article = STATIC_ARTICLES.find((item) => item.slug === slug);
 
   if (!article) {
     return (

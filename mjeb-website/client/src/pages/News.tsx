@@ -3,14 +3,14 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import Layout from "@/components/Layout";
-import { trpc } from "@/lib/trpc";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useState, useMemo } from "react";
+import { STATIC_ARTICLES } from "@/lib/staticContent";
 
 export default function News() {
-  const { data: articles, isLoading } = trpc.articles.list.useQuery();
   const [searchQuery, setSearchQuery] = useState("");
+  const articles = STATIC_ARTICLES;
 
   const filteredArticles = useMemo(() => {
     if (!articles) return [];
@@ -59,13 +59,7 @@ export default function News() {
       {/* Articles Grid */}
       <section className="py-16 md:py-24 bg-white">
         <div className="container">
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-muted rounded-lg h-96 animate-pulse"></div>
-              ))}
-            </div>
-          ) : filteredArticles && filteredArticles.length > 0 ? (
+          {filteredArticles && filteredArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredArticles.map((article) => (
                 <Link key={article.id} href={`/news/${article.slug}`}>
@@ -113,7 +107,7 @@ export default function News() {
                 {searchQuery ? "Aucune actualité ne correspond à votre recherche" : "Aucune actualité pour le moment"}
               </p>
             </div>
-          )}
+          ) }
         </div>
       </section>
 

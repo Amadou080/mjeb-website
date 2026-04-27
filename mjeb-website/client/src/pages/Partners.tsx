@@ -2,12 +2,12 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Handshake, Target, Award } from "lucide-react";
 import Layout from "@/components/Layout";
-import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
 import { ArrowRight } from "lucide-react";
+import { STATIC_PARTNERS } from "@/lib/staticContent";
 
 export default function Partners() {
-  const { data: partners, isLoading } = trpc.partners.list.useQuery();
+  const partners = STATIC_PARTNERS;
 
   const partnerCategories = [
     { icon: Target, label: "ONG Internationales", color: "bg-primary/10 text-primary" },
@@ -89,13 +89,7 @@ export default function Partners() {
             </p>
           </div>
 
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-white rounded-lg h-80 animate-pulse shadow-lg"></div>
-              ))}
-            </div>
-          ) : partners && partners.length > 0 ? (
+          {partners && partners.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {partners.map((partner) => (
                 <Card
