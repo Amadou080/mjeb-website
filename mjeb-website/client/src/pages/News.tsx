@@ -25,7 +25,7 @@ export default function News() {
       {/* Hero Section */}
       <section className="relative h-70 bg-cover bg-center overflow-hidden">
         <img
-          src="/gallery/AG PRESIDENT.jpg"
+          src="/mjeb-logo.jpg"
           alt="Actualités hero"
           className="absolute inset-0 w-full h-full object-cover"
         />

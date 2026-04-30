@@ -20,7 +20,7 @@ export default function Partners() {
       {/* Hero Section */}
       <section className="relative h-80 bg-cover bg-center overflow-hidden">
         <img
-          src="/gallery/Bababe Art/art (2).jpg"
+          src="/mjeb-logo.jpg"
           alt="Partners hero"
           className="absolute inset-0 w-full h-full object-cover"
         />

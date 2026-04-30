@@ -101,17 +101,53 @@ export default function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedImage, setSelectedImage] = useState<any>(null);
   const [visibleCount, setVisibleCount] = useState(16);
+  const [availableImages, setAvailableImages] = useState<
+    { id: string; category: string; folder: string; url: string; title: string }[]
+  >([]);
+  const [isCheckingImages, setIsCheckingImages] = useState(true);
 
   const allImages = useMemo(() => {
     return generateImageUrls();
   }, []);
 
+  useEffect(() => {
+    let isCancelled = false;
+
+    const checkImage = (url: string) =>
+      new Promise<boolean>((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+      });
+
+    const filterExistingImages = async () => {
+      setIsCheckingImages(true);
+      const checks = await Promise.all(
+        allImages.map(async (image) => ({
+          image,
+          ok: await checkImage(image.url),
+        }))
+      );
+
+      if (isCancelled) return;
+      setAvailableImages(checks.filter((item) => item.ok).map((item) => item.image));
+      setIsCheckingImages(false);
+    };
+
+    void filterExistingImages();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [allImages]);
+
   const filteredImages = useMemo(() => {
     if (selectedCategory === "all") {
-      return allImages;
+      return availableImages;
     }
-    return allImages.filter(img => img.category === selectedCategory);
-  }, [selectedCategory, allImages]);
+    return availableImages.filter(img => img.category === selectedCategory);
+  }, [selectedCategory, availableImages]);
 
   // Reset visible count when category changes
   useEffect(() => {
@@ -143,7 +179,7 @@ export default function Gallery() {
       {/* WVI Style Gallery Hero */}
       <section className="relative h-80 flex items-center bg-primary overflow-hidden">
         <img
-          src="/gallery/Bababe Art/art (1).jpg"
+          src="/mjeb-logo.jpg"
           alt="Gallery Hero"
           className="absolute inset-0 w-full h-full object-cover opacity-40"
         />
@@ -164,7 +200,7 @@ export default function Gallery() {
           <div className="flex flex-wrap gap-2 items-center">
             <span className="text-xs font-black uppercase tracking-widest text-primary/50 mr-2 hidden lg:block">Filtrer :</span>
             {CATEGORIES.map(cat => {
-              const count = cat.id === "all" ? allImages.length : allImages.filter(i => i.category === cat.id).length;
+              const count = cat.id === "all" ? availableImages.length : availableImages.filter(i => i.category === cat.id).length;
               return (
                 <button
                   key={cat.id}
@@ -250,9 +286,13 @@ export default function Gallery() {
 
           {/* Image count */}
           <div className="mb-8 flex items-center justify-between">
-            <p className="text-sm font-bold text-gray-500">
-              Affichage de <span className="text-primary font-black">{visibleImages.length}</span> sur <span className="text-primary font-black">{filteredImages.length}</span> photos
-            </p>
+            {isCheckingImages ? (
+              <p className="text-sm font-bold text-gray-500">Verification des images en cours...</p>
+            ) : (
+              <p className="text-sm font-bold text-gray-500">
+                Affichage de <span className="text-primary font-black">{visibleImages.length}</span> sur <span className="text-primary font-black">{filteredImages.length}</span> photos
+              </p>
+            )}
           </div>
 
           {/* Image Grid */}
@@ -343,7 +383,7 @@ export default function Gallery() {
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
             <div className="p-8 border border-white/20 hover:bg-white/5 transition-colors group">
-              <p className="impact-big-number !text-white group-hover:scale-110 transition-transform">{allImages.length}</p>
+              <p className="impact-big-number !text-white group-hover:scale-110 transition-transform">{availableImages.length}</p>
               <p className="text-mjeb-orange font-black uppercase tracking-widest">Histoires Partagées</p>
             </div>
             <div className="p-8 border border-white/20 hover:bg-white/5 transition-colors group">
